@@ -1,0 +1,33 @@
+{% include 'templates/header.html' %}
+<div class="container mx-auto px-4 mt-24">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold mb-6">👥 Users</h1>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-purple-900 text-white">
+                    <tr>
+                        <th class="py-2 px-4 text-left">ID</th>
+                        <th class="py-2 px-4 text-left">Name</th>
+                        <th class="py-2 px-4 text-left">Email</th>
+                        <th class="py-2 px-4 text-left">Last Login</th>
+                        <th class="py-2 px-4 text-left">Login Count</th>
+                        <th class="py-2 px-4 text-left">Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-2 px-4">{{ user.id }}</td>
+                        <td class="py-2 px-4">{{ user.first_name }} {{ user.last_name }}</td>
+                        <td class="py-2 px-4">{{ user.email }}</td>
+                        <td class="py-2 px-4">{{ user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else 'Never' }}</td>
+                        <td class="py-2 px-4">{{ user.login_count }}</td>
+                        <td class="py-2 px-4">{{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

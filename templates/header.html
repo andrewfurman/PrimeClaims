@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <header class="fixed top-0 w-full bg-purple-900 py-4 px-5 shadow-lg z-50">
+        <div class="flex justify-between items-center">
+            <div class="text-white text-2xl font-bold">
+                💊 Pharmacy Test Claims
+            </div>
+            <div class="flex items-center">
+                <nav class="mr-4">
+                    <a href="/members" class="text-white hover:text-purple-200 px-4 py-2">🪪 Members</a>
+                    <a href="/claims" class="text-white hover:text-purple-200 px-4 py-2">🧾 Claims</a>
+                </nav>
+                {% if session.get('user') %}
+                    <div class="relative">
+                        <button onclick="toggleDropdown()" class="flex items-center bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg transition-colors">
+                            <img src="{{ session['user']['picture'] }}" alt="{{ session['user']['name'] }}" class="w-8 h-8 rounded-full mr-2">
+                            <span>{{ session['user']['first_name'] }} {{ session['user']['last_name'] }}</span>
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg">
+                            <div class="flex items-center px-4 py-2">
+                                <div>
+                                    <span class="font-semibold">{{ session['user']['first_name'] }} {{ session['user']['last_name'] }}</span><br/>
+                                    <span class="text-sm text-gray-600 block">{{ session['user']['email'] }}</span>
+                                </div>
+                            </div>
+                            <div class="py-1">
+                                <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-purple-100">
+                                    Logout 👋
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="/login" class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg transition-colors">
+                        Login
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <script>
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.relative')) {
+                const dropdown = document.getElementById('userDropdown');
+                if (!dropdown.classList.contains('hidden')) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

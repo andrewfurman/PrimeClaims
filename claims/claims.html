@@ -1,0 +1,119 @@
+{% include 'templates/header.html' %}
+
+<div class="mx-5 mt-20 mb-0">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-0">
+        <!-- Update the header section in claims.html -->
+        <div class="px-2 pb-0 pt-1">
+            <!-- Header row with flex layout -->
+            <div class="flex flex-col space-y-4 px-2 py-2">
+                <h1 class="text-2xl font-bold">🧾 Claims</h1>
+
+                <!-- GPT Prompt Row -->
+                <div class="flex space-x-4">
+                    <input 
+                        type="text" 
+                        id="gptPrompt"
+                        placeholder="Enter prompt for claim creation..."
+                        class="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                    <button 
+                        onclick="createClaimGPT()"
+                        id="createGPTButton"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                    >
+                        ✨ Create
+                    </button>
+                    <button 
+                        onclick="exportClaims()"
+                        id="exportButton"
+                        class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+                    >
+                        📥 Export
+                    </button>
+                    <button 
+                        onclick="exportNCPDP()"
+                        id="ncpdpButton"
+                        class="px-4 py-2 bg-orange-600 text-white rounded-lg shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50"
+                    >
+                        📄 NCPDP
+                    </button>
+                </div>
+                <!-- Member Search Row -->
+                <div class="flex flex-col space-y-2 relative"> <!-- Added relative positioning -->
+                    <input 
+                        type="text" 
+                        id="memberSearch"
+                        placeholder="Search for a member (optional)..."
+                        class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    >
+                    <div 
+                        id="memberSearchResults" 
+                        class="absolute mt-12 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto w-full hidden z-50"
+                        style="top: 100%;"
+                    ></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Table wrapper with both vertical and horizontal scroll -->
+        <div class="max-h-[85vh] overflow-auto mb-0 pb-0">
+            <table class="min-w-max mb-0">
+                <thead class="bg-purple-900 text-white sticky top-0">
+                    <tr>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Claim ID</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Member ID</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Member Name</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Service Provider ID</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Service Provider Qualifier</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">NDC Number</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Quantity</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Days Supply</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Date Written</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Gross Amount Due</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Patient Paid Amount</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Other Payer Amount</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Diagnosis Code</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Clinical Info</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Prescriber ID</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Prescriber Name</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Created At</th>
+                        <th class="py-2 px-4 text-left whitespace-nowrap">Updated At</th>
+                    </tr>
+                </thead>
+
+                <!-- Claims Table Body  -->
+                <tbody>
+                    {% for claim in claims %}
+                    <tr class="border-t hover:bg-gray-50">
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.claim_id }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">
+                            <a href="{{ url_for('members.view_member', member_id=claim.member.member_id) }}" 
+                               class="text-blue-600 hover:text-blue-800 hover:underline">
+                                {{ claim.member.member_id }}
+                            </a>
+                        </td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.member.first_name }} {{ claim.member.last_name }}</td>
+                        <!-- Rest of the columns remain unchanged -->
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.service_provider_id }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.service_provider_id_qualifier }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.ndc_number }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.quantity_dispensed }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.days_supply }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.date_prescription_written }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">${{ claim.gross_amount_due }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">${{ claim.patient_paid_amount_submitted }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">${{ claim.other_payer_amount_paid }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.diagnosis_code }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.clinical_information }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.prescriber_id }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.prescriber_last_name }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.created_at }}</td>
+                        <td class="py-2 px-4 whitespace-nowrap">{{ claim.updated_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script defer src="{{ url_for('static', filename='claim.js') }}"></script>
+</div>

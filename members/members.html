@@ -1,0 +1,131 @@
+{% include 'templates/header.html' %}
+
+{% if error %}
+<div class="mt-20 mx-auto max-w-7xl px-4 py-6">
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <!-- Heroicon name: mini/exclamation-triangle -->
+                <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-yellow-700">
+                    {{ error }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="mx-5 mt-20 mb-0">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-0">
+        <div class="px-2 pb-0 pt-1">
+          <!-- Header row with flex layout -->
+          <div class="flex items-center space-x-4 px-2 py-2">
+            <h1 class="text-2xl font-bold">🪪 Members</h1>
+
+            <input 
+              type="text" 
+              id="gptPrompt"
+              placeholder="Enter prompt for member creation..."
+              class="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+
+            <button 
+              onclick="createMemberGPT()"
+              id="createGPTButton"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            >
+              ✨ Create
+            </button>
+              <button 
+                onclick="toggleSearch()"
+                id="searchButton"
+                class="px-4 py-2 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+              >
+                🔍 Search
+              </button>
+              <button 
+                  onclick="exportMembers()"
+                  id="exportButton"
+                  class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+              >
+                  📥 Export
+              </button>
+          </div>
+            
+        <!-- Member Table  -->
+            <!-- Member Table with horizontal scroll -->
+            <div class="max-h-[85vh] overflow-y-auto overflow-x-auto mb-0 pb-0">
+                <table class="min-w-full mb-0 w-max"> <!-- w-max allows table to extend beyond viewport -->
+                    <thead class="bg-purple-900 text-white sticky top-0">
+                        <tr>
+                            <th class="py-2 px-4 text-left whitespace-nowrap">Member ID</th>
+                            <th class="py-2 px-4 text-left whitespace-nowrap">Name</th>
+                            <th class="py-2 px-4 text-left whitespace-nowrap">DOB</th>
+                            <th class="py-2 px-4 text-left whitespace-nowrap">Member Phone & Address</th>
+                            <th class="py-2 px-4 text-left whitespace-nowrap">Insurance</th>
+                            <th class="py-2 px-4 text-left whitespace-nowrap">Pharmacy Benefits</th>
+                            <th class="py-2 px-4 text-left whitespace-nowrap">Copays</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for member in members %}
+                        <tr class="border-t">
+                            <td class="py-2 px-4 whitespace-nowrap">
+                                <a href="{{ url_for('members.view_member', member_id=member.member_id) }}" class="text-purple-900 hover:text-purple-700">
+                                    {{ member.member_id }}
+                                </a>
+                            </td>
+                            <td class="py-2 px-4 whitespace-nowrap">
+                                {{ member.first_name }} {{ member.last_name }}
+                            </td>
+                            <td class="py-2 px-4 whitespace-nowrap">{{ member.date_of_birth }}</td>
+                            <td class="py-2 px-4 whitespace-nowrap">
+                                <span class="font-bold">Phone:</span> {{ member.phone_number }}
+                                <span class="font-bold ml-2">Address:</span> {{ member.address }}
+                                {{ member.city }}, {{ member.state }} {{ member.zip_code }}
+                            </td>
+                            <td class="py-2 px-4 whitespace-nowrap">
+                                <span class="font-bold">ID:</span> {{ member.insurance_id_number }}
+                                <span class="font-bold ml-2">Group:</span> {{ member.group_number }}
+                            </td>
+                            <td class="py-2 px-4 whitespace-nowrap">
+                                <span class="font-bold">BIN:</span> {{ member.rx_bin }}
+                                <span class="font-bold ml-2">PCN:</span> {{ member.rx_pcn }}
+                                <span class="font-bold ml-2">Group:</span> {{ member.rx_group }}
+                            </td>
+                            <td class="py-2 px-4 whitespace-nowrap">
+                                <span class="font-bold">Generic:</span> {{ member.copay_1_generic }}
+                                <span class="font-bold ml-2">Preferred:</span> {{ member.copay_2_preferred }}
+                                <span class="font-bold ml-2">Non-Preferred:</span> {{ member.copay_3_non_preferred }}
+                                <span class="font-bold ml-2">Specialty:</span> {{ member.copay_4_specialty }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+    </div>
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div class="bg-white p-6 rounded-lg w-3/4 max-h-[80vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Search Members</h2>
+          <button onclick="toggleSearch()" class="text-gray-500 hover:text-gray-700">✕</button>
+        </div>
+        <input 
+          type="text" 
+          id="searchInput"
+          placeholder="Search by name, ID, DOB (YYYY-MM-DD), group number, address..."
+          class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 mb-4"
+        >
+        <div id="searchResults" class="space-y-2"></div>
+      </div>
+    </div>
+    <script defer src="{{ url_for('static', filename='member.js') }}"></script>
+</div>
