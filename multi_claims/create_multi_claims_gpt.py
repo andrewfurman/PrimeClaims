@@ -21,15 +21,17 @@ from claims.create_claim_gpt import create_claim_gpt
 client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
 
 def create_claim_wrapper(args):
-    member_database_id, prompt, app = args
+    member_database_id, prompt, index, app = args
     with app.app_context():
         try:
-            return create_claim_gpt(
+            result = create_claim_gpt(
                 member_database_id=member_database_id,
                 prompt=prompt
             )
+            print(f"Claim {index + 1}: Success")
+            return result
         except Exception as e:
-            print(f"Error creating claim: {e}")
+            print(f"Claim {index + 1}: Error - {str(e)}")
             return None
 
 def create_multi_claims_gpt(prompt: str = None, member_database_id: int = None):
@@ -96,9 +98,11 @@ def create_multi_claims_gpt(prompt: str = None, member_database_id: int = None):
 
         # Prepare arguments for parallel processing
         claim_args = [
-            (member_database_id, spec['create_claim_prompt'], app) 
-            for spec in result['claim_specification_prompts']
+            (member_database_id, spec['create_claim_prompt'], i, app) 
+            for i, spec in enumerate(result['claim_specification_prompts'])
         ]
+
+        print(f"\nAttempting to create {len(claim_args)} claims...")
 
         # Create claims in parallel
         created_claims = []
@@ -109,6 +113,7 @@ def create_multi_claims_gpt(prompt: str = None, member_database_id: int = None):
         # Add created claims to result
         result['created_claims'] = created_claims
 
+        print(f"\nCreated {len(created_claims)} out of {len(claim_args)} claims successfully")
         return result
 
     except Exception as e:
