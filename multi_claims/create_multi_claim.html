@@ -1,0 +1,54 @@
+{% include 'templates/header.html' %}
+
+<div class="mx-5 mt-20 mb-0">
+    <!-- Removed overflow-hidden from this div -->
+    <div class="bg-white shadow-lg rounded-lg mb-0">
+        <div class="px-2 pb-0 pt-1">
+            <div class="flex flex-col space-y-4 px-2 py-2">
+                <h1 class="text-2xl font-bold">✨ Multi-Claim Generator</h1>
+
+                <!-- Prompt Input Row -->
+                <div class="flex space-x-4">
+                    <input 
+                        type="text" 
+                        id="multiClaimPrompt"
+                        placeholder="Enter prompt for generating multiple claim specifications..."
+                        class="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                    <button 
+                        onclick="generateMultiClaims()"
+                        id="generateButton"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                    >
+                        ✨ Generate
+                    </button>
+                </div>
+
+                <!-- Member Search Row -->
+                <div class="flex flex-col space-y-2 relative">
+                    <input 
+                        type="text" 
+                        id="memberSearch"
+                        placeholder="Search for a member (optional)..."
+                        class="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    >
+                    <div 
+                        id="memberSearchResults" 
+                        class="absolute mt-12 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto w-full"
+                        style="display: none; z-index: 1000; position: absolute; top: 100%;"
+                    ></div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="resultsSection" style="display: none">
+                    <h2 class="text-xl font-semibold mb-4">Generated Claim Specifications</h2>
+                    <div id="claimPrompts" class="space-y-4">
+                        <!-- Results will be inserted here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='multi_claim.js') }}"></script>

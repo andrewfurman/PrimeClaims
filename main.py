@@ -14,6 +14,7 @@ from members.member_routes import members_bp
 from claims.claim_routes import claims_bp
 from ncpdp.ncpdp_routes import ncpdp_bp
 from auth.auth_routes import auth_bp
+from multi_claims.multi_claim_routes import multi_claims_bp
 
 # Database
 from flask_migrate import Migrate
@@ -161,7 +162,7 @@ app.register_blueprint(members_bp)
 app.register_blueprint(claims_bp)
 app.register_blueprint(ncpdp_bp)
 app.register_blueprint(auth_bp)
-
+app.register_blueprint(multi_claims_bp)
 
 # Then modify your index route to use it
 @app.route('/')
