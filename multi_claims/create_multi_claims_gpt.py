@@ -21,9 +21,8 @@ from claims.create_claim_gpt import create_claim_gpt
 client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
 
 def create_claim_wrapper(args):
-    member_database_id, prompt = args
-    # Create application context for this thread
-    with current_app.app_context():
+    member_database_id, prompt, app = args
+    with app.app_context():
         try:
             return create_claim_gpt(
                 member_database_id=member_database_id,
@@ -35,13 +34,12 @@ def create_claim_wrapper(args):
 
 def create_multi_claims_gpt(prompt: str = None, member_database_id: int = None):
     try:
+        app = current_app._get_current_object()
         # Set default empty prompt if none provided
         prompt = prompt or ""
 
-        # Create application context for the main function
-        with current_app.app_context():
-            # Get member data using get_member function (will return random member if no ID provided)
-            member_data = get_member(member_database_id)
+        # Get member data using get_member function (will return random member if no ID provided)
+        member_data = get_member(member_database_id)
         if "error" in member_data:
             raise ValueError(f"Error getting member data: {member_data['error']}")
 
@@ -96,21 +94,16 @@ def create_multi_claims_gpt(prompt: str = None, member_database_id: int = None):
         response = client.chat.completions.create(**payload)
         result = json.loads(response.choices[0].message.content)
 
-        # Call the create_claim_gpt function to create the claims using each of the prompts in the result. Include the Member_database_id in the functon call to create claims.
-
         # Prepare arguments for parallel processing
         claim_args = [
-            (member_database_id, spec['create_claim_prompt']) 
+            (member_database_id, spec['create_claim_prompt'], app) 
             for spec in result['claim_specification_prompts']
         ]
 
         # Create claims in parallel
         created_claims = []
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            # Submit all tasks and wait for completion
             futures = list(executor.map(create_claim_wrapper, claim_args))
-
-            # Filter out None results from failed claims
             created_claims = [claim for claim in futures if claim is not None]
 
         # Add created claims to result
