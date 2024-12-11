@@ -113,9 +113,8 @@ function generateMultiClaims() {
                 const specElement = document.createElement('div');
                 specElement.className = 'bg-gray-50 p-4 rounded-lg';
                 specElement.innerHTML = `
-                    <h3 class="font-semibold text-lg mb-2">Scenario ${index + 1}</h3>
-                    <p class="mb-2"><strong>Description:</strong> ${spec.scenario_description}</p>
-                    <p><strong>Claim Prompt:</strong> ${spec.create_claim_prompt}</p>
+                    <h3 class="font-semibold text-lg mb-2">Claim ${index + 1}</h3>
+                    <p>${spec.create_claim_prompt}</p>
                 `;
                 claimPrompts.appendChild(specElement);
             });
