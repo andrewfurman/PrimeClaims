@@ -54,8 +54,10 @@ def create_multi_claims_gpt(prompt: str = None, member_database_id: int = None):
                 },
                 {
                     "role": "user",
-                    "content": f"""Create an array of claim specifications based on this request: {prompt}
-                    {f'Consider member demographics: {member_data}' if member_data else 'Create diverse scenarios for any member.'}"""
+                    "content": f"""Create an array of claim specifications based on this prompt: {prompt} . Make sure that the number of claims in the array of claim_specification_prompts exactly matches what was requested. If the prompt above requests N claims, your final array must contain exactly N claims. Do not include fewer or more."
+
+.
+                    {f'Consider member demographics: {member_data}' if member_data else 'Create diverse scenarios for a generic person that has health insurance from their employer.'}"""
                 }
             ],
             "response_format": {
@@ -71,19 +73,15 @@ def create_multi_claims_gpt(prompt: str = None, member_database_id: int = None):
                                 "items": {
                                     "type": "object",
                                     "properties": {
-                                        "scenario_description": {
-                                            "type": "string",
-                                            "description": "Description of the senario that this claim will test"
-                                        },
                                         "create_claim_prompt": {
                                             "type": "string",
-                                            "description": "Prompt that contains all of the detail needed to create the claim."
+                                            "description": "Prompt that contains all of the detail needed to create the claim. Do not inclued member information, but instead focus on information about the individual claim and any additional details specified in the prompt"
                                         }
                                     },
-                                    "required": ["scenario_description", "create_claim_prompt"],
+                                    "required": ["create_claim_prompt"],
                                     "additionalProperties": False
                                 },
-                                "description": "List of claim specifications and prompts to create the claims."
+                                "description": "List of claim descriptions and ChatGPT prompts to create the claims. Make sure that the amount of claims in the array exactly matches the number of claims specified in the prompt."
                             }
                         },
                         "required": ["claim_specification_prompts"],
@@ -119,12 +117,3 @@ def create_multi_claims_gpt(prompt: str = None, member_database_id: int = None):
     except Exception as e:
         print(f"Error in create_multi_claims_gpt: {str(e)}")
         raise e
-
-if __name__ == "__main__":
-    test_prompt = """Create test claims for validating prior authorization logic:
-    - One claim that should pass PA requirements
-    - One claim that should fail PA requirements
-    - One claim for a maintenance medication"""
-
-    result = create_multi_claims_gpt(test_prompt)
-    print("Generated claim prompts:", json.dumps(result, indent=2))
