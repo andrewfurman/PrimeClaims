@@ -59,6 +59,32 @@ class Claim(db.Model):
     prescriber_last_name = db.Column(TEXT, nullable=True)
     prescriber_phone_number = db.Column(TEXT, nullable=True)
     
+    # Drug Information Fields
+    drug_name = db.Column(TEXT, nullable=True)
+    drug_strength = db.Column(TEXT, nullable=True)
+    drug_form = db.Column(TEXT, nullable=True)
+    
+    # DAW & Related Codes
+    daw_code = db.Column(TEXT, nullable=True)
+    professional_service_code = db.Column(TEXT, nullable=True)
+    dur_pps_level_of_effort_value = db.Column(TEXT, nullable=True)
+    reason_for_service_code = db.Column(TEXT, nullable=True)
+    submission_clarification_code = db.Column(TEXT, nullable=True)
+    result_of_service_code = db.Column(TEXT, nullable=True)
+    
+    # Payment and Amount Fields
+    vaccine_administration_reimbursement_amount = db.Column(NUMERIC(10,2), nullable=True)
+    other_payer_patient_responsibility_amount = db.Column(NUMERIC(10,2), nullable=True)
+    other_payer_reject_code = db.Column(TEXT, nullable=True)
+    
+    # Other Payer and Coverage Details
+    other_payer_qualifier = db.Column(TEXT, nullable=True)
+    
+    # Context and Location Fields
+    place_of_service = db.Column(TEXT, nullable=True)
+    pharmacy_service_type = db.Column(TEXT, nullable=True)
+    patient_residence_code = db.Column(TEXT, nullable=True)
+    
     # Timestamps
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
