@@ -36,11 +36,6 @@ def export_claims_route():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
-@claims_bp.route('/claims/view/<int:claim_id>')
-def view_claim(claim_id):
-    claim = Claim.query.join(Member).filter(Claim.claim_id == claim_id).first_or_404()
-    return render_template('claims/view_claim.html', claim=claim)
-
 @claims_bp.route('/claims/edit/<int:claim_id>', methods=['GET', 'POST'])
 def edit_claim(claim_id):
     claim = Claim.query.join(Member).filter(Claim.claim_id == claim_id).first_or_404()
