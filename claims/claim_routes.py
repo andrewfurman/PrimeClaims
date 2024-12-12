@@ -3,6 +3,7 @@ from sqlalchemy import desc
 from .claim_model import Claim
 from .create_claim_gpt import create_claim_gpt
 from .export_claims import export_claims
+from members.member_model import Member
 
 claims_bp = Blueprint('claims', __name__, 
                      template_folder='.')
@@ -34,3 +35,8 @@ def export_claims_route():
                         download_name='claims_export.xlsx')
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
+@claims_bp.route('/claims/view/<int:claim_id>')
+def view_claim(claim_id):
+    claim = Claim.query.join(Member).filter(Claim.database_id == claim_id).first_or_404()
+    return render_template('claims/view_claim.html', claim=claim)
