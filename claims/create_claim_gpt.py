@@ -5,13 +5,13 @@
 import os, sys, json
 from openai import OpenAI
 from datetime import datetime
-from members.get_member import get_member
 
 # Add root directory to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Now we can import from other directories
 from claims.claim_model import db, Claim
 from members.member_model import Member
+from members.get_member import get_member
 
 client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
 
@@ -399,8 +399,14 @@ def create_claim_gpt(member_database_id: int = None, prompt: str = None):
     return claim_data
 
 if __name__ == "__main__":
-    test_prompt = """Create a claim for a 30-day supply of Lisinopril 10mg tablets. 
-    The prescription was written on 2024-01-15 and filled at CVS Pharmacy."""
+    # Import Flask app and set up context
+    import sys
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from main import app
     
-    result = create_claim_gpt(3, test_prompt)
-    print("Created claim:", json.dumps(result, indent=2))
+    with app.app_context():
+        test_prompt = """Create a claim for a 30-day supply of Lisinopril 10mg tablets. 
+        The prescription was written on 2024-01-15 and filled at CVS Pharmacy."""
+        
+        result = create_claim_gpt(3, test_prompt)
+        print("Created claim:", json.dumps(result, indent=2))
