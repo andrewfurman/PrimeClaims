@@ -5,7 +5,7 @@
 # This function will work exactly the same as the create_claim_gpt function in ../create_claim_gpt.py, except it will use the Claude API instead of GPT-4o-mini. This function will use the "claude-3-5-haiku-latest" as the model.
 
 import os, sys, json
-from anthropic import Anthropic
+import anthropic
 from datetime import datetime
 
 # Add root directory to Python path
@@ -16,7 +16,7 @@ from members.member_model import Member
 from members.get_member import get_member
 
 
-client = Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])
+client = anthropic.Client(api_key=os.environ['ANTHROPIC_API_KEY'])
 
 def create_claim_claude(member_database_id: int = None, prompt: str = None):
     # Set default empty prompt if none provided
