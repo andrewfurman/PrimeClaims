@@ -2,24 +2,19 @@
 {% include 'templates/header.html' %}
 
 <div class="container mx-auto px-4 py-8 max-w-7xl">
-    <h1 class="text-2xl font-bold mb-6">Edit Claim</h1>
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold mb-2">Claim ID: {{ claim.claim_id }}</h1>
+        <h2 class="text-xl mb-6">
+            Member: 
+            <a href="{{ url_for('members.view_member', member_id=claim.member.member_id) }}" 
+               class="text-blue-600 hover:text-blue-800 hover:underline">
+                {{ claim.member.first_name }} {{ claim.member.last_name }} - {{ claim.member.member_id }}
+            </a>
+        </h2>
+    </div>
     
     <form id="editClaimForm" class="space-y-8">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Basic Information -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-lg font-semibold mb-4 text-blue-600">Basic Information</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Claim ID</label>
-                        <input type="text" value="{{ claim.claim_id }}" disabled class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Member ID</label>
-                        <input type="text" value="{{ claim.member_id }}" disabled class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50">
-                    </div>
-                </div>
-            </div>
 
             <!-- Drug Information -->
             <div class="bg-white p-6 rounded-lg shadow-md">
