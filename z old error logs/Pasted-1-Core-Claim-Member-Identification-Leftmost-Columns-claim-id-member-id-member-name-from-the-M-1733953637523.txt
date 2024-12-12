@@ -1,0 +1,88 @@
+1. Core Claim & Member Identification (Leftmost Columns)
+
+claim_id
+member_id
+member_name (from the Member table)
+2. Key Claim & Prescription Details
+These are the primary claim details that you’d likely want to see immediately after the identifiers.
+
+prescription_service_reference_number
+prescription_service_reference_number_qualifier
+product_service_id
+product_service_id_qualifier
+ndc_number
+drug_name
+drug_strength
+drug_form
+quantity_dispensed
+fill_number
+days_supply
+dispense_as_written
+date_prescription_written
+prescription_origin_code
+special_packaging_indicator
+unit_of_measure
+3. Prescriber Information
+Once you’ve reviewed the claim basics, you may need to know who prescribed the medication.
+
+prescriber_id
+prescriber_id_qualifier
+prescriber_last_name
+prescriber_phone_number
+4. Diagnosis Information
+Clinical context, including diagnosis codes.
+
+diagnosis_code
+diagnosis_code_qualifier
+clinical_information
+5. Service Provider Information
+The pharmacy or provider submitting the claim.
+
+service_provider_id
+service_provider_id_qualifier
+6. Other Payer Information
+Details about other insurers or payers involved.
+
+other_payer_id
+other_payer_id_qualifier
+other_payer_amount_paid
+7. Pricing & Cost Details
+Cost-related fields follow, allowing a drill-down into financials.
+
+ingredient_cost_submitted
+dispensing_fee_submitted
+patient_paid_amount_submitted
+usual_and_customary_charge
+gross_amount_due
+basis_of_cost_determination
+8. Payment & Reimbursement Fields
+Any special reimbursement amounts or rejections.
+
+vaccine_administration_reimbursement_amount
+other_payer_patient_responsibility_amount
+other_payer_reject_code
+9. DAW & Related Codes
+Details on dispensing as written (DAW) and professional service codes.
+
+daw_code
+professional_service_code
+dur_pps_level_of_effort_value
+reason_for_service_code
+submission_clarification_code
+result_of_service_code
+10. Other Coverage & Payer Qualifier
+Additional coverage detail.
+
+other_coverage_code
+other_payer_qualifier
+11. Context & Location Fields
+Where and how the service was provided.
+
+place_of_service
+pharmacy_service_type
+patient_residence_code
+12. Timestamps (Rightmost Columns)
+Dates are typically less critical for initial viewing, so they can be to the right.
+
+created_at
+updated_at

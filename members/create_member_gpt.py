@@ -55,7 +55,7 @@ def create_member_gpt(prompt):
                                 },
                                 "address": {
                                     "type": "string",
-                                    "description": "Member's street address. make this line look like a real street in the city selected, not 123 Main St. Make sure to select random street number, not sequential numbers like 456, 9876 or 1234"
+                                    "description": "Member's street address. make this line look like a real street in the city selected, not 123 Main St. Do not use Maple, Park, Elmwood, Brook, Willow as street names. Make sure to select random street number, not sequential numbers like 456, 9876 or 1234. Ignore this if the prompt explicitly requests a specific street address"
                                 },
                                 "city": {
                                     "type": "string",
