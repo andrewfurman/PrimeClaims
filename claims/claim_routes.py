@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, send_file
 from sqlalchemy import desc
-from .claim_model import Claim
+from .claim_model import Claim, db
 from .create_claim_gpt import create_claim_gpt
 from .export_claims import export_claims
 from members.member_model import Member
