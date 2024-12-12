@@ -40,3 +40,21 @@ def export_claims_route():
 def view_claim(claim_id):
     claim = Claim.query.join(Member).filter(Claim.database_id == claim_id).first_or_404()
     return render_template('claims/view_claim.html', claim=claim)
+
+@claims_bp.route('/claims/edit/<int:claim_id>', methods=['GET', 'POST'])
+def edit_claim(claim_id):
+    claim = Claim.query.join(Member).filter(Claim.database_id == claim_id).first_or_404()
+    
+    if request.method == 'POST':
+        try:
+            # Update claim fields from form data
+            for field in request.form:
+                if hasattr(claim, field):
+                    setattr(claim, field, request.form[field])
+            
+            db.session.commit()
+            return jsonify({"success": True, "message": "Claim updated successfully"})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 400
+            
+    return render_template('claims/edit_claim.html', claim=claim)
