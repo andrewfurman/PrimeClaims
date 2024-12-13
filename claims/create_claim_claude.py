@@ -38,9 +38,9 @@ def create_claim_claude(member_database_id: int = None, prompt: str = None):
                 "claim": {
                     "type": "object",
                     "properties": {
-                        "member_id": {"type": "integer", "description": "Internal database identifier for the member. Not to be confused with the NCPDP Member ID/Cardholder ID. Example: 12345"},
+                        "member_id": {"type": "integer", "description": " ID for the member that would show up on their health insurance ID Card. realistic pharmacy insurance member ID numbers. ID should consist of eight random digits, followed by a dash and a two-digit suffix (e.g., '48291057-03'). Ensure that the IDs do not follow simple sequential patterns (e.g., avoid '12345678-01' or '87654321-99'). Examples: 48291057-03, 75930284-12, 19384756-07, 62039485-21, 83749201-15."},
                         "service_provider_id_qualifier": {"type": "string", "description": "NCPDP field identifying type of pharmacy ID being submitted. Common values: '01' = NPI, '05' = Medicaid ID, '07' = NCPDP Provider ID, '08' = State License. Example: '01'"},
-                        "service_provider_id": {"type": "string", "description": "Unique identifier for the dispensing pharmacy. If NPI, must be 10 digits. Example NPI: '1234567890', Example NCPDP: 'AB12345'"},
+                        "service_provider_id": {"type": "string", "description": "Unique identifier for the dispensing pharmacy. If NPI, must be 10 digits. Example NPI: '3884786382', Ensure that the IDs do not follow simple sequential patterns (e.g., avoid '1234567890' or '8765432101')"},
                         "diagnosis_code_qualifier": {"type": "string", "description": "Indicates diagnosis code format. '01' = ICD-9, '02' = ICD-10. Use '02' for ICD-10 per guide. Example: '02'"},
                         "diagnosis_code": {"type": "string", "description": "ICD-10 or ICD-9 code justifying medical necessity. Must match qualifier format. Example ICD-10: 'E11.9' (Type 2 Diabetes)"},
                         "clinical_information": {"type": "string", "description": "Free-form text containing relevant patient clinical data, often used for prior authorization or step therapy documentation. Example: 'Patient failed formulary alternative lisinopril due to cough'"},

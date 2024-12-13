@@ -1,0 +1,100 @@
+# Create claim gpt (member.database_id int, string prompt) 
+
+# This function will take in the database ID of a member along with a prompt, which is just a string as parameters and will then call the Anthropic Claude API to request all of the data. Fields needed to create a new claim in the claims table.
+
+# This function will work exactly the same as the create_claim_gpt function in ../create_claim_gpt.py, except it will use the Claude API instead of GPT-4o-mini. This function will use the "claude-3-5-haiku-latest" as the model.
+
+import os, sys, json
+import anthropic
+from datetime import datetime
+
+# Add root directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Now we can import from other directories
+from claims.claim_model import db, Claim
+from members.member_model import Member
+from members.get_member import get_member
+
+
+client = anthropic.Client(api_key=os.environ['ANTHROPIC_API_KEY'])
+
+def create_claim_claude(member_database_id: int = None, prompt: str = None):
+    # Set default empty prompt if none provided
+    prompt = prompt or ""
+
+    # Get member data using existing get_member function
+    member_data = get_member(member_database_id)
+    if "error" in member_data:
+        raise ValueError(f"Error getting member data: {member_data['error']}")
+
+    member_database_id = member_data['database_id']
+
+    tools = [{
+        "name": "create_claim",
+        "description": "Creates pharmacy insurance claims based on provided information",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "claim": {
+                    "type": "object",
+                    "properties": {
+                        "member_id": {"type": "integer", "description": " ID for the member that would show up on their health insurance ID Card. realistic pharmacy insurance member ID numbers. ID should consist of eight random digits, followed by a dash and a two-digit suffix (e.g., '48291057-03'). Ensure that the IDs do not follow simple sequential patterns (e.g., avoid '12345678-01' or '87654321-99'). Examples: 48291057-03, 75930284-12, 19384756-07, 62039485-21, 83749201-15."},
+                        "service_provider_id_qualifier": {"type": "string", "description": "NCPDP field identifying type of pharmacy ID being submitted. Common values: '01' = NPI, '05' = Medicaid ID, '07' = NCPDP Provider ID, '08' = State License. Example: '01'"},
+                        "service_provider_id": {"type": "string", "description": "Unique identifier for the dispensing pharmacy. If NPI, must be 10 digits. Example NPI: '3884786382', Ensure that the IDs do not follow simple sequential patterns (e.g., avoid '1234567890' or '8765432101')"}
+                    },
+                    "required": [
+                        "member_id", "service_provider_id_qualifier", "service_provider_id"
+                    ]
+                }
+            },
+            "required": ["claim"]
+        }
+    }]
+
+    query = f"""Create the data for a claim that adheres to the requirements in this prompt: {prompt}
+    Make sure the claim you're creating makes sense for the person listed below based on their demographics and insurance information:
+    {member_data}"""
+
+    response = client.messages.create(
+        model="claude-3-5-haiku-latest",
+        max_tokens=4096,
+        tools=tools,
+        tool_choice={"type": "tool", "name": "create_claim"},
+        messages=[{
+            "role": "user", 
+            "content": query
+        }]
+    )
+
+    # Extract the claim data from the tool use response
+    claim_data = None
+    for content in response.content:
+        if content.type == "tool_use" and content.name == "create_claim":
+            claim_data = content.input['claim']
+            break
+
+    if not claim_data:
+        raise ValueError("Failed to generate claim data")
+
+    # Ensure member_id is set to the provided database_id
+    claim_data['member_id'] = member_database_id
+
+    # Create and save the claim
+    new_claim = Claim(**claim_data)
+    db.session.add(new_claim)
+    db.session.commit()
+
+    return claim_data
+
+if __name__ == "__main__":
+    # Import Flask app and set up context
+    import sys
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from main import app
+    
+    with app.app_context():
+        test_prompt = """Create a claim for a 30-day supply of Lisinopril 10mg tablets. 
+        The prescription was written on 2024-01-15 and filled at CVS Pharmacy."""
+        
+        result = create_claim_claude(3, test_prompt)
+        print("Created claim:", json.dumps(result, indent=2))
