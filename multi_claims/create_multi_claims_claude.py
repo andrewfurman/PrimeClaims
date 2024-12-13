@@ -1,4 +1,3 @@
-
 import os, sys, json
 import anthropic
 import concurrent.futures
@@ -109,3 +108,18 @@ def create_multi_claims_claude(prompt: str = None, member_database_id: int = Non
     except Exception as e:
         print(f"Error in create_multi_claims_claude: {str(e)}")
         raise e
+
+if __name__ == "__main__":
+    # Import Flask app and set up context
+    import sys
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from main import app
+    
+    with app.app_context():
+        test_prompt = "create two claims for a generic drug"
+        try:
+            result = create_multi_claims_claude(prompt=test_prompt)
+            print("\nGenerated Claims:")
+            print(json.dumps(result, indent=2))
+        except Exception as e:
+            print(f"Error: {str(e)}")
