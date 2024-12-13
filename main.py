@@ -26,18 +26,9 @@ app = Flask(__name__, template_folder='.')
 # Configure database and secret key
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    'pool_size': 5,  # Reasonable pool size for most applications
-    'pool_timeout': 30,  # Seconds to wait before giving up on getting a connection
-    'pool_recycle': 1800,  # Recycle connections after 30 minutes
-    'max_overflow': 2,  # Allow up to 2 connections beyond pool_size
-    'pool_pre_ping': True,  # Enable connection health checks
-    'connect_args': {
-        'keepalives': 1,
-        'keepalives_idle': 30,
-        'keepalives_interval': 10,
-        'keepalives_count': 5,
-        'connect_timeout': 10
-    }
+    'pool_size': 20,
+    'pool_timeout': 60,
+    'max_overflow': 10
 }
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.getenv("AUTH0_CLIENT_SECRET")  # Required for Auth0 sessions

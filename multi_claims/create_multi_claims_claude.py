@@ -1,6 +1,7 @@
 import os, sys, json
 import anthropic
 import concurrent.futures
+import time
 from flask import current_app
 
 # Add the root directory to Python path
@@ -38,7 +39,7 @@ def create_multi_claims_claude(prompt: str = None, member_database_id: int = Non
 
         tools = [{
             "name": "create_multi_claims",
-            "description": "Creates specifications for pharmacy insurance test claims",
+            "description": "This is a tool that creates specifications for pharmacy insurance test claims. Do not include details about the insured member, but instead include realistic information that would appear on each claim based on the prompt like the name of the drug, amount, date of service, quantity, what condition the drug is used to treat. Be specific but aim to keep the prompts as susinct as possible (less than 30 words). Make sure that the number of claims in the array of claim_specification_prompts exactly matches what was requested. If the prompt above requests N claims, your final array must contain exactly N claims. Do not include fewer or more.",
             "input_schema": {
                 "type": "object",
                 "properties": {
@@ -66,7 +67,7 @@ def create_multi_claims_claude(prompt: str = None, member_database_id: int = Non
 
         response = client.messages.create(
             model="claude-3-5-haiku-latest",
-            max_tokens=4096,
+            max_tokens=8192,
             tools=tools,
             tool_choice={"type": "tool", "name": "create_multi_claims"},
             messages=[{
@@ -91,18 +92,23 @@ def create_multi_claims_claude(prompt: str = None, member_database_id: int = Non
             for i, spec in enumerate(result['claim_specification_prompts'])
         ]
 
-        print(f"\nAttempting to create {len(claim_args)} claims...")
+        print(f"\nAttempting to create {len(claim_args)} claims... with CLAUDE")
 
         # Create claims in parallel
         created_claims = []
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = list(executor.map(create_claim_wrapper, claim_args))
-            created_claims = [claim for claim in futures if claim is not None]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            # Process in batches of 10
+            batch_size = 10
+            for i in range(0, len(claim_args), batch_size):
+                batch = claim_args[i:i + batch_size]
+                futures = list(executor.map(create_claim_wrapper, batch))
+                created_claims.extend([claim for claim in futures if claim is not None])
+                time.sleep(1)  # Add delay between batches
 
         # Add created claims to result
         result['created_claims'] = created_claims
 
-        print(f"\nCreated {len(created_claims)} out of {len(claim_args)} claims successfully")
+        print(f"\nCreated {len(created_claims)} out of {len(claim_args)} claims successfully using CLAUDE")
         return result
 
     except Exception as e:
@@ -114,7 +120,7 @@ if __name__ == "__main__":
     import sys
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from main import app
-    
+
     with app.app_context():
         test_prompt = "create two claims for a generic drug"
         try:
