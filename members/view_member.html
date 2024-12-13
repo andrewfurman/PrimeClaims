@@ -108,7 +108,11 @@
             <tbody>
                 {% for claim in member.claims|sort(attribute='updated_at', reverse=true) %}
                 <tr class="border-t hover:bg-gray-50">
-                    <td class="py-2 px-4 whitespace-nowrap">{{ claim.claim_id }}</td>
+                    <td class="py-2 px-4 whitespace-nowrap">
+                        <a href="{{ url_for('claims.edit_claim', claim_id=claim.claim_id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                            {{ claim.claim_id }}
+                        </a>
+                    </td>
                     <td class="py-2 px-4 whitespace-nowrap">{{ claim.service_provider_id }}</td>
                     <td class="py-2 px-4 whitespace-nowrap">{{ claim.service_provider_id_qualifier }}</td>
                     <td class="py-2 px-4 whitespace-nowrap">{{ claim.ndc_number }}</td>
