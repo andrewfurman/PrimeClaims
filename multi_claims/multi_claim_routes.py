@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify
-from .create_multi_claims_gpt import create_multi_claims_gpt
+from .create_multi_claims_claude import create_multi_claims_claude
 
 multi_claims_bp = Blueprint('multi_claims', __name__, template_folder='.')
 
@@ -20,7 +20,7 @@ def generate_multi_claims():
         
         print(f"Processing request with prompt: {prompt}, member_id: {member_database_id}")
         
-        result = create_multi_claims_gpt(prompt, member_database_id)
+        result = create_multi_claims_claude(prompt, member_database_id)
         
         # Debug log the result
         print(f"Generated result: {result}")
