@@ -28,7 +28,10 @@ def create_claim_gpt_route():
 @claims_bp.route('/claims/export', methods=['GET'])
 def export_claims_route():
     try:
-        filepath = export_claims()
+        member_database_ids = request.args.getlist('member_database_ids[]', type=int)
+        member_database_ids = member_database_ids if member_database_ids else None
+        
+        filepath = export_claims(member_database_ids)
         return send_file(filepath,
                         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                         as_attachment=True,
