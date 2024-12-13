@@ -1,3 +1,4 @@
+# dysfunction will export all claims in the claims table, along with all of the membership information for the member related to this claim the claims should be joined to the member table using the member database ID field on both tables.
 
 import pandas as pd
 import os
@@ -14,7 +15,7 @@ def export_claims(member_database_ids=None):
         
         # Filter by member_database_ids if provided
         if member_database_ids:
-            query = query.filter(Member.member_database_id.in_(member_database_ids))
+            query = query.filter(Member.database_id.in_(member_database_ids))
             
         # Execute query
         claims = query.all()
