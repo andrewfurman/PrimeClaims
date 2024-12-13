@@ -1,4 +1,3 @@
-# dysfunction will export all claims in the claims table, along with all of the membership information for the member related to this claim the claims should be joined to the member table using the member database ID field on both tables.
 
 import pandas as pd
 import os
@@ -8,10 +7,17 @@ from .claim_model import Claim
 from members.member_model import Member
 from sqlalchemy import inspect
 
-def export_claims():
+def export_claims(member_database_ids=None):
     try:
-        # Query claims with member join
-        claims = Claim.query.join(Member).all()
+        # Base query with member join
+        query = Claim.query.join(Member)
+        
+        # Filter by member_database_ids if provided
+        if member_database_ids:
+            query = query.filter(Member.member_database_id.in_(member_database_ids))
+            
+        # Execute query
+        claims = query.all()
         
         # Get all column names from both models
         claim_columns = [c.key for c in inspect(Claim).columns]
