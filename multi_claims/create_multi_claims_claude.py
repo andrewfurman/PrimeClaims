@@ -97,8 +97,8 @@ def create_multi_claims_claude(prompt: str = None, member_database_id: int = Non
         # Create claims in parallel
         created_claims = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            # Process in batches of 10
-            batch_size = 10
+            # Process in batches of 50
+            batch_size = 50
             for i in range(0, len(claim_args), batch_size):
                 batch = claim_args[i:i + batch_size]
                 futures = list(executor.map(create_claim_wrapper, batch))

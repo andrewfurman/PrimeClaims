@@ -21,7 +21,6 @@ from flask_migrate import Migrate
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from sqlalchemy.exc import OperationalError
 
-
 app = Flask(__name__, template_folder='.')
 # Configure database and secret key
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
