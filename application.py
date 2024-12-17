@@ -1,3 +1,5 @@
+# Application.py
+
 import os, psycopg2
 from auth_config import oauth, auth0, requires_auth
 from functools import wraps
@@ -171,6 +173,9 @@ def teardown_request(exception=None):
     if hasattr(db.session, 'active'):
         db.session.remove()
         delattr(db.session, 'active')
+
+# Add this line at the bottom, before if __name__ == '__main__':
+application = app
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
